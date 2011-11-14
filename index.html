@@ -20,7 +20,7 @@
 
         $('#css-example-a').click(function(e) {
           e.preventDefault();
-          $(this).fadeOut().parent().addClass('active');
+          $(this).parent().addClass('active');
           $('#css-example').stalactite({
             fluid: false,
             cssPrep: false
@@ -32,7 +32,7 @@
 
         $('#fluid-example-a').click(function(e) {
           e.preventDefault();
-          $(this).fadeOut().parent().addClass('active');
+          $(this).parent().addClass('active');
           $('#fluid-example').stalactite();
           updateLoader(function() {
             $('#fluid-example').fadeIn();
