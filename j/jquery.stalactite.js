@@ -88,7 +88,7 @@
         .not(options.cssSelector)
         .find('img, embed, iframe, audio, video');
       var $content = $this
-        .find(':not(img, embed iframe, audio, video)');
+        .find(':not(img, embed, iframe, audio, video)');
 
       var loadedImgs = 0;
 
