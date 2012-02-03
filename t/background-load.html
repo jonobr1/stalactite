@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Does $.load method listen to background images?</title>
+
+    <link href="../c/style.css" media="screen" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      ol {
+        width: 410px;
+        margin: 25px auto;
+        text-align: left;
+      }
+
+      .background-image {
+        width: 410px;
+        height: 290px;
+      }
+
+      .css-load {
+        background: url(http://s3.amazonaws.com/resized-images-new/40E473CE-9C84-4D7A-A1A5-31B2D8A2A35C) 0 0 no-repeat;
+      }
+
+    </style>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript">
+
+      $(function() {
+
+        var count = 0;
+        var $result = $('.result');
+        var bgStyles = function() {
+          return 'url(http://s3.amazonaws.com/resized-images-new/40E473CE-9C84-4D7A-A1A5-31B2D8A2A35C?extra' + Math.floor(100 * Math.random()) + ') 0 0 no-repeat';
+        };
+
+        $('.js-load').css({
+          background: bgStyles()
+        });
+
+        $('.background-image').load(function(e) {
+          count++;
+          $result.html(count);
+        });
+
+        $('.placable').html('<div class=".background-image" style="background: ' + bgStyles() + ';width:410px;height:290px;">&nbsp;</div>');
+
+        $result.html(count);
+
+      });
+
+    </script>
+
+  </head>
+  <body>
+    <ol>
+      <li>Background image applied in &lt;styles&gt; in the head:</li>
+      <li class="background-image css-load"></li>
+      <li>Background image applied via <code>JavaScript</code>:</li>
+      <li class="background-image js-load"></li>
+      <li>Element placed by jQuery:</li>
+      <li class="placable"></li>
+      <li><code>$.load</code> methods triggered: <span class="result"></span></li>
+    </ol>
+  </body>
+</html>

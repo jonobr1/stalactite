@@ -83,12 +83,13 @@
       }
 
       // Gather all assets in the element
+      var selector = 'img, embed, iframe, audio, video, div';
       var $assets = $this
         .children()
         .not(options.cssSelector)
-        .find('img, embed, iframe, audio, video, div');
+        .find(selector);
       var $content = $this
-        .find(':not(img, embed, iframe, audio, video, div)');
+        .find(':not(' + selector + ')');
 
       var loadedImgs = 0;
 
