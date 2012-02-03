@@ -86,9 +86,9 @@
       var $assets = $this
         .children()
         .not(options.cssSelector)
-        .find('img, embed, iframe, audio, video');
+        .find('img, embed, iframe, audio, video, div');
       var $content = $this
-        .find(':not(img, embed, iframe, audio, video)');
+        .find(':not(img, embed, iframe, audio, video, div)');
 
       var loadedImgs = 0;
 
