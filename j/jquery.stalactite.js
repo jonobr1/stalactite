@@ -128,8 +128,15 @@
 
         var $this = $($content[i]); 
         var $prev = $($content[i - 1]);
-        var x1 = $this.offset().left, x2 = x1 + $this.outerWidth(),
-            y1 = $this.offset().top, y2 = y1 + $this.outerHeight();
+
+        var outerWidth = $this.outerWidth(true);
+        var outerHeight = $this.outerHeight(true);
+
+        var hMargin = outerWidth - $this.outerWidth();
+        var vMargin = outerHeight - $this.outerHeight();
+
+        var x1 = $this.offset().left - hMargin, x2 = x1 + outerWidth,
+            y1 = $this.offset().top - vMargin, y2 = y1 + outerHeight;
 
         if ($prev.length > 0) {
           if (x1 < $prev.offset().left && i > 0 && i !== params.i) {
@@ -148,8 +155,15 @@
           for (var j = prevMaxIndex; j >= prevMinIndex; j--) {
 
             var $prev = $($content[j]);
-            var a1 = $prev.offset().left, a2 = a1 + $prev.outerWidth(),
-                b1 = $prev.offset().top, b2 = b1 + $prev.outerHeight();
+
+            outerWidth = $prev.outerWidth(true);
+            outerHeight = $prev.outerHeight(true);
+
+            hMargin = outerWidth - $prev.outerWidth();
+            vMargin = outerHeight - $prev.outerHeight();
+
+            var a1 = $prev.offset().left - hMargin, a2 = a1 + outerWidth,
+                b1 = $prev.offset().top - vMargin, b2 = b1 + outerHeight;
 
             if (a1 >= x2 || a2 <= x1) {
               continue;
@@ -263,9 +277,12 @@
 
     var $content = $dom.children().addClass(options.cssSelector);
 
+    var vMargin = $dom.outerHeight(true) - $dom.outerHeight();
+    var hMargin = $dom.outerWidth(true) - $dom.outerWidth();
+
     var origin = {
-      x: $dom.offset().left + ($dom.outerWidth() - $dom.width()) / 2,
-      y: $dom.offset().top + ($dom.outerHeight() - $dom.height()) / 2
+      x: $dom.offset().left - hMargin + ($dom.outerWidth(true) - $dom.width()) / 2,
+      y: $dom.offset().top - vMargin + ($dom.outerHeight(true) - $dom.height()) / 2
     };
 
     callback.apply(this, [$content, origin, params.prevMinIndex, params.prevMaxIndex, params.i]);
