@@ -91,22 +91,24 @@
       var $content = $this
         .find(':not(' + selector + ')');
 
-      var loadedImgs = 0;
-
+      // var loadedImgs = 0;
       // Make sure all the elements are loaded before we start packing
-      if ($assets.length > 0) {
-        $assets.each(function(i) {
-          var $asset = $(this).load(function() {
-            animateIn($asset);
-            loadedImgs++;
-            if (loadedImgs >= $assets.length) {
-              pack($this, calculateOffset, params, options);
-            }
-          });
-        });
-      } else {
-        pack($this, calculateOffset, params, options);
-      }
+      // if ($assets.length > 0) {
+      //   $assets.each(function(i) {
+      //     console.log('loading');
+      //     var $asset = $(this).bind('load', function() {
+      //       animateIn($asset);
+      //       loadedImgs++;
+      //       console.log(loadedImgs, $assets.length);
+      //       if (loadedImgs >= $assets.length) {
+      //         pack($this, calculateOffset, params, options);
+      //       }
+      //     });
+      //   });
+      // } else {
+      //   console.log('no need to load');
+      pack($this, calculateOffset, params, options);
+      // }
 
       // This measures the distance between the current child element and the
       // element `relative`ly above it. Then animates to the pack.
@@ -214,7 +216,7 @@
 
       $loader
         .find('img')
-        .load(function() {
+        .bind('load', function() {
           $loader.fadeIn();
         });
 
