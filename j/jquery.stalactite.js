@@ -99,6 +99,7 @@
           var $asset = $(this).load(function() {
             animateIn($asset);
             loadedImgs++;
+            console.log(loadedImgs, $assets.length);
             if (loadedImgs >= $assets.length) {
               pack($this, calculateOffset, params, options);
             }
