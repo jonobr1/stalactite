@@ -96,6 +96,7 @@
       // Make sure all the elements are loaded before we start packing
       if ($assets.length > 0) {
         $assets.each(function(i) {
+          console.log('loading');
           var $asset = $(this).load(function() {
             animateIn($asset);
             loadedImgs++;
@@ -106,6 +107,7 @@
           });
         });
       } else {
+        console.log('no need to load');
         pack($this, calculateOffset, params, options);
       }
 
