@@ -32,6 +32,11 @@
 
     return this.each(function() {
 
+      // Store "private" variables in this object.
+      if (!this._stalactite) {
+        this._stalactite = {};
+      }
+
       var $this = $(this);
       var packTimeout = null;
       var $newElems = prep($this, options);
@@ -57,29 +62,35 @@
       var row = params.row;
 
       // Bind events for window resizing
-      if (options.fluid) {
+      if (options.fluid && !this._stalactite.listening) {
         $this.css('width', 'auto');
-        $(window).bind('resize', function() {
+        this._stalactite.packTimeout = function() {
+          resizing = false;
+          packTimeout = null;
+          row = 0;
+          params = {
+            row: 0,
+            prevMinIndex: 0,
+            prevMaxIndex: 0,
+            i: 0
+          };
+          indexed = [];
+          pack($this, calculateOffset, params, options);
+        };
+        this._stalactite.resize = function() {
           if (packTimeout) {
             clearTimeout(packTimeout);
           } else {
             appendLoader($this);
           }
           resizing = true;
-          packTimeout = setTimeout(function() {
-            resizing = false;
-            packTimeout = null;
-            row = 0;
-            params = {
-              row: 0,
-              prevMinIndex: 0,
-              prevMaxIndex: 0,
-              i: 0
-            };
-            indexed = [];
-            pack($this, calculateOffset, params, options);
-          }, 2000);
-        });
+          packTimeout = setTimeout($this[0]._stalactite.packTimeout, 2000);
+        };
+        $(window).bind('resize', this._stalactite.resize);
+        this._stalactite.listening = true;
+      } else if (!options.fluid && this._stalactite.listening) {
+        // Stop listening to the window resize event.
+        $(window).unbind(this._stalactite.resize);
       }
 
       // Gather all assets in the element
@@ -115,11 +126,6 @@
       function calculateOffset($content, origin, prevMinIndex, prevMaxIndex, i) {
 
         if (i >= $content.length) {
-          if (indexed[prevThisIndex]) { // update
-            indexed[prevThisIndex] = $.extend(indexed[prevThisIndex], params);
-          } else {  // push a new instance
-            indexed.push($.extend({ dom: $content.parent('div')[0] }, params));
-          }
           options.complete.apply(this);
           removeLoader(options);
           return;
@@ -131,11 +137,16 @@
         var $this = $($content[i]); 
         var $prev = $($content[i - 1]);
 
-        var outerWidth = $this.outerWidth(true);
-        var outerHeight = $this.outerHeight(true);
+        var owt = $this.outerWidth(true);
+        var oht = $this.outerHeight(true);
+        var owf = $this.outerWidth();
+        var ohf = $this.outerHeight();
 
-        var hMargin = outerWidth - $this.outerWidth();
-        var vMargin = outerHeight - $this.outerHeight();
+        var outerWidth = Math.max(owt, owf);
+        var outerHeight = Math.max(oht, ohf);
+
+        var hMargin = owt - owf;
+        var vMargin = oht - ohf;
 
         var x1 = $this.offset().left - hMargin, x2 = x1 + outerWidth,
             y1 = $this.offset().top - vMargin, y2 = y1 + outerHeight;
@@ -183,7 +194,7 @@
 
         animateIn($this, {
           opacity: 1,
-          marginTop: '+=' + offsetY
+          marginTop: offsetY
         }, function() {
           calculateOffset($content, origin, prevMinIndex, prevMaxIndex, i + 1);
         });
@@ -235,15 +246,13 @@
 
   function index($dom) {
     var dom = $dom[0];
-    var iterator = -1;
     for (var i = 0; i < indexed.length; i++) {
       var d = indexed[i].dom;
       if (dom === d) {
-        iterator = i;
-        break;
+        return i;
       }
     }
-    return iterator;
+    return -1;
   }
 
   function removeLoader(options) {
@@ -279,15 +288,15 @@
 
     var $content = $dom.children().addClass(options.cssSelector);
 
-    var vMargin = $dom.outerHeight(true) - $dom.outerHeight();
-    var hMargin = $dom.outerWidth(true) - $dom.outerWidth();
+    var vMargin = ($dom.outerHeight(true) - $dom.outerHeight()) / 2;
+    var hMargin = ($dom.outerWidth(true) - $dom.outerWidth()) / 2;
 
     var origin = {
-      x: $dom.offset().left - hMargin + ($dom.outerWidth(true) - $dom.width()) / 2,
-      y: $dom.offset().top - vMargin + ($dom.outerHeight(true) - $dom.height()) / 2
+      x: $dom.offset().left - hMargin,
+      y: $dom.offset().top - vMargin
     };
 
-    callback.apply(this, [$content, origin, params.prevMinIndex, params.prevMaxIndex, params.i]);
+    callback.call(this, $content, origin, params.prevMinIndex, params.prevMaxIndex, params.i);
 
   }
 
